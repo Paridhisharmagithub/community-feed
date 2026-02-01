@@ -1,13 +1,7 @@
+from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import PostViewSet, CommentViewSet, LeaderboardView, UserViewSet
-
-router = DefaultRouter()
-router.register(r'posts', PostViewSet, basename='post')
-router.register(r'comments', CommentViewSet, basename='comment')
-router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('leaderboard/', LeaderboardView.as_view(), name='leaderboard'),
+    path("admin/", admin.site.urls),
+    path("api/", include("community.urls")),
 ]
