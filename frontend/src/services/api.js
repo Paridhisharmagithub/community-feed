@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// ✅ ENV-based API URL (local + production safe)
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/",
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,7 +18,7 @@ api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      // ✅ Django TokenAuth format
+      // ✅ Django REST Framework TokenAuth
       config.headers.Authorization = `Token ${token}`;
     }
     return config;
@@ -28,9 +32,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // ❌ No redirect, just logout
     if (error.response?.status === 401) {
-      localStorage.clear();
+      // logout silently
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("authUser");
     }
     return Promise.reject(error);
   }
