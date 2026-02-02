@@ -4,3 +4,4 @@ django-cors-headers>=4.0
 pytz
 gunicorn
 whitenoise
+python-dotenv
