@@ -3,24 +3,24 @@ import { api } from "../services/api";
 
 export default function Leaderboard() {
   const [data, setData] = useState([]);
-  const load = async () => {
-    try {
-      const res = await api.get("leaderboard/");
-      setData(res.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-  useEffect(()=>{ load(); }, []);
+
+  useEffect(() => {
+    api.get("leaderboard/").then((r) => setData(r.data));
+  }, []);
+
   return (
-    <div className="p-4 bg-white rounded shadow">
-      <h3 className="font-semibold mb-3">Top 5 (last 24h)</h3>
-      {data.length === 0 && <div className="text-gray-500">No activity yet</div>}
+    <div className="sticky top-24 bg-slate-950 border border-slate-800 rounded-xl p-4">
+      <h3 className="text-sm font-semibold text-gray-300 mb-4">
+        Top Contributors (24h)
+      </h3>
+
       <ol className="space-y-2">
-        {data.map((u, idx) => (
-          <li key={idx} className="flex justify-between">
-            <span>{idx+1}. {u.user.username}</span>
-            <span className="font-bold">{u.karma}</span>
+        {data.map((u, i) => (
+          <li key={i} className="flex justify-between text-sm">
+            <span>{i + 1}. @{u.user.username}</span>
+            <span className="text-green-400 font-medium">
+              {u.karma}
+            </span>
           </li>
         ))}
       </ol>

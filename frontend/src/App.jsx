@@ -1,85 +1,80 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Feed from "./components/Feed";
 import Leaderboard from "./components/Leaderboard";
 import { api, setAuthToken } from "./services/api";
 
-function App() {
+export default function App() {
+  const [user, setUser] = useState(
+    localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null
+  );
   const [token, setToken] = useState(localStorage.getItem("token") || "");
-  const [username, setUsername] = useState(localStorage.getItem("username") || "");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    const data = { username: form.get("username"), password: form.get("password") };
-    try {
-      const res = await api.post("auth/login/", data);
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("username", res.data.user.username);
-      setToken(res.data.token);
-      setUsername(res.data.user.username);
-      setAuthToken(res.data.token);
-    } catch (err) {
-      alert("Login failed");
-    }
-  };
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    const data = { username: form.get("username"), password: form.get("password") };
-    try {
-      const res = await api.post("auth/register/", data);
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("username", res.data.user.username);
-      setToken(res.data.token);
-      setUsername(res.data.user.username);
-      setAuthToken(res.data.token);
-    } catch (err) {
-      alert("Register failed");
-    }
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (token) setAuthToken(token);
   }, [token]);
 
+  const auth = async (type, e) => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const data = { username: f.get("username"), password: f.get("password") };
+
+    const res = await api.post(`auth/${type}/`, data);
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+    setToken(res.data.token);
+    setUser(res.data.user);
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    window.location.reload();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <header className="max-w-4xl mx-auto flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Community Feed</h1>
-        <div>
-          {username ? (
-            <div className="text-right">
-              <div className="mb-1">Signed in as <b>{username}</b> ✅</div>
-              <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-red-500 text-white px-3 py-1 rounded">Logout</button>
+    <div className="min-h-screen bg-slate-900">
+      <header className="bg-slate-950 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between">
+          <h1 className="text-xl font-semibold text-indigo-400">
+            Community Feed
+          </h1>
+
+          {user ? (
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-300">
+                @{user.username}
+              </span>
+              <button
+                onClick={logout}
+                className="text-sm bg-red-500/20 border border-red-500/40 px-3 py-1 rounded"
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <div className="flex gap-4">
-              <form onSubmit={handleLogin} className="flex gap-2">
-                <input name="username" placeholder="username" className="border p-1 rounded" />
-                <input name="password" type="password" placeholder="password" className="border p-1 rounded" />
-                <button type="submit" className="bg-blue-600 text-white px-3 rounded">Login</button>
+              <form onSubmit={(e) => auth("login", e)} className="flex gap-2">
+                <input name="username" placeholder="user" className="input" />
+                <input name="password" type="password" placeholder="pass" className="input" />
+                <button className="btn">Login</button>
               </form>
-              <form onSubmit={handleRegister} className="flex gap-2">
-                <input name="username" placeholder="new user" className="border p-1 rounded" />
-                <input name="password" type="password" placeholder="password" className="border p-1 rounded" />
-                <button type="submit" className="bg-green-600 text-white px-3 rounded">Register</button>
+              <form onSubmit={(e) => auth("register", e)} className="flex gap-2">
+                <input name="username" placeholder="new user" className="input" />
+                <input name="password" type="password" placeholder="pass" className="input" />
+                <button className="btn">Register</button>
               </form>
             </div>
           )}
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto grid grid-cols-3 gap-6">
-        <section className="col-span-2">
+      <main className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+        <section className="md:col-span-3">
           <Feed />
         </section>
-        <aside className="col-span-1">
+        <aside>
           <Leaderboard />
         </aside>
       </main>
     </div>
   );
 }
-
-export default App;

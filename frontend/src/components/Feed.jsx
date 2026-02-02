@@ -13,28 +13,33 @@ export default function Feed() {
 
   useEffect(() => { load(); }, []);
 
-  const createPost = async () => {
+  const create = async () => {
     if (!text.trim()) return;
-    try {
-      await api.post("posts/create/", { content: text });
-      setText("");
-      load();
-    } catch (e) {
-      alert("Create post failed: login?");
-    }
+    await api.post("posts/create/", { content: text });
+    setText("");
+    load();
   };
 
   return (
     <div>
-      <div className="mb-4 p-4 border bg-white rounded">
-        <textarea value={text} onChange={(e)=>setText(e.target.value)} className="w-full p-2 border rounded" placeholder="Write something..." />
+      <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 mb-6">
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Share something with the community..."
+          className="w-full bg-slate-900 border border-slate-800 rounded p-3"
+        />
         <div className="text-right mt-2">
-          <button onClick={createPost} className="bg-indigo-600 text-white px-4 py-1 rounded">Post</button>
+          <button onClick={create} className="btn-primary">
+            Post
+          </button>
         </div>
       </div>
 
-      <div className="space-y-4">
-        {posts.map(p => <Post key={p.id} post={p} onRefresh={load} />)}
+      <div className="space-y-6">
+        {posts.map((p) => (
+          <Post key={p.id} post={p} refresh={load} />
+        ))}
       </div>
     </div>
   );

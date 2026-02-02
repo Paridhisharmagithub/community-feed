@@ -1,75 +1,75 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { api } from "../services/api";
 import CommentTree from "./CommentTree";
 
-export default function Post({ post, onRefresh }) {
-  const [expanded, setExpanded] = useState(false);
+export default function Post({ post, refresh }) {
+  const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState(null);
-  const [commentText, setCommentText] = useState("");
+  const [comment, setComment] = useState("");
 
-  const loadDetail = async () => {
+  const load = async () => {
     const res = await api.get(`posts/${post.id}/`);
     setDetail(res.data);
   };
 
-  useEffect(() => { if (expanded) loadDetail(); }, [expanded]);
+  useEffect(() => { if (open) load(); }, [open]);
 
   const like = async () => {
-    try {
-      await api.post(`posts/${post.id}/like/`);
-      onRefresh();
-      if (expanded) loadDetail();
-    } catch (e) {
-      alert("Already liked or login required");
-    }
+    await api.post(`posts/${post.id}/like/`);
+    refresh();
+    if (open) load();
   };
 
   const addComment = async () => {
-    if(!commentText.trim()) return;
-    try {
-      await api.post(`posts/${post.id}/comments/`, { content: commentText });
-      setCommentText("");
-      loadDetail();
-      onRefresh();
-    } catch (e) {
-      alert("comment failed");
-    }
+    await api.post(`posts/${post.id}/comments/`, { content: comment });
+    setComment("");
+    load();
   };
 
   return (
-    <div className="p-4 bg-white rounded shadow">
+    <div className="bg-slate-950 border border-slate-800 rounded-xl p-5">
       <div className="flex justify-between">
         <div>
-          <div className="font-semibold">{post.author.username}</div>
-          <div className="text-sm text-gray-600">{new Date(post.created_at).toLocaleString()}</div>
+          <div className="text-indigo-400 font-medium">
+            @{post.author.username}
+          </div>
+          <div className="text-xs text-gray-500">
+            {new Date(post.created_at).toLocaleString()}
+          </div>
         </div>
-        <div>
-          <button onClick={like} className="bg-red-500 text-white px-3 py-1 rounded">Like ({post.like_count})</button>
-        </div>
-      </div>
-      <div className="mt-3">{post.content}</div>
-
-      <div className="mt-3">
-        <button onClick={() => setExpanded(s=>!s)} className="text-blue-600 underline">
-          {expanded ? "Hide comments" : "View comments"}
+        <button onClick={like} className="btn-like">
+          ❤️ {post.like_count}
         </button>
       </div>
 
-      {expanded && detail && (
+      <p className="mt-4 text-gray-100">{post.content}</p>
+
+      <button
+        onClick={() => setOpen(!open)}
+        className="mt-4 text-sm text-indigo-400"
+      >
+        {open ? "Hide discussion" : "View discussion"}
+      </button>
+
+      {open && detail && (
         <div className="mt-4">
-          <div className="mb-3">
-            <textarea value={commentText} onChange={(e)=>setCommentText(e.target.value)} className="w-full p-2 border rounded" placeholder="Write a comment..." />
-            <div className="text-right mt-2">
-              <button onClick={addComment} className="bg-green-600 text-white px-3 py-1 rounded">Comment</button>
-            </div>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Write a comment..."
+            className="w-full bg-slate-900 border border-slate-800 rounded p-2"
+          />
+          <div className="text-right mt-2">
+            <button onClick={addComment} className="btn-primary">
+              Comment
+            </button>
           </div>
 
           <CommentTree
             comments={detail.comments}
             postId={post.id}
-            refresh={loadDetail}
-            />
-
+            refresh={load}
+          />
         </div>
       )}
     </div>
