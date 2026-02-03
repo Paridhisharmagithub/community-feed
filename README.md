@@ -137,15 +137,20 @@ npm run dev
 
 ---
 
-### Option 2: Docker (Recommended)
+## 🐳 Docker Deployment (Production-Ready)
+
+This project is fully containerized and hosted on **Docker Hub**. You can run the entire stack without installing Python or Node.js locally.
+
+### 📦 Container Repositories
+[![Docker Hub](https://img.shields.io)](https://hub.docker.com/repository/docker/paridhidocker009/communityfeed-backend)
+[![Docker Hub](https://img.shields.io)](https://hub.docker.com/repository/docker/paridhidocker009/communityfeed-frontend)
+
+### 🚀 Quick Start
+Run the following command in the root directory to pull the images and start the services:
 
 ```bash
-# Build and start all services
-docker compose up --build
+docker compose up -d
 ```
-
-✅ Frontend: **http://localhost:3000**  
-✅ Backend: **http://localhost:8000/api/**
 
 **Stop containers:**
 ```bash

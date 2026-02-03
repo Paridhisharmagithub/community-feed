@@ -3,6 +3,7 @@ version: "3.9"
 services:
   backend:
     build: ./backend
+    image: paridhidocker009/communityfeed-backend:latest # Matches your Hub repo
     container_name: community-backend
     ports:
       - "8000:8000"
@@ -14,6 +15,7 @@ services:
 
   frontend:
     build: ./frontend
+    image: paridhidocker009/communityfeed-frontend:latest # Matches your Hub repo
     container_name: community-frontend
     command: npm run dev -- --host
     ports:
@@ -23,5 +25,3 @@ services:
     depends_on:
       - backend
     restart: always
-
-
