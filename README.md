@@ -15,7 +15,7 @@ Built with **Django REST Framework**, **React + Vite**, **Tailwind CSS** — eng
 
 ## 🔗 Live Demo
 
-- **Frontend:** `https://community-feed-7zkspdqwo-paridhis-projects-066e3ee2.vercel.app/`
+- **Frontend:** `https://community-feed-kappa.vercel.app/`
 - **Backend API:** `https://community-feed-bhlj.onrender.com/`
 
 ---
